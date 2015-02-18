@@ -2,8 +2,9 @@
 A top-down shmup written in JavaScript.
 
 Development Critical Path
-- Setup index.html page
-- Create the game board
+X - Setup index.html page
+X - Create the game board
+- Create the game loop
 - Create the player
 - Move and Fire based on keyboard events
 - Create enemies

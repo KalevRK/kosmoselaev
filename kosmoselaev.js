@@ -1,16 +1,17 @@
 // Game settings
 var settings = {
-  width: window.innerWidth,
-  height: window.innerHeight,
+  width: 800,
+  height: 600,
   backgroundColor: '#D6D6D6'
 };
 
 // Player
-var player = {
+var playerSettings = {
     x: settings.width/2,
     y: settings.height-20,
     width: 10,
-    height: 10
+    height: 10,
+    moveIncrement: 10
 };
 
 // Helper function for creating screen coordinates
@@ -30,14 +31,30 @@ d3.select('#gameScreen').style({
     height: addPx(settings.height)
 });
 
-// initialize the player and add keyboard controls
-d3.select('#gameScreen').append('svg:rect').style({
+// initialize the player
+var player = d3.select('#gameScreen').append('svg:rect').style({
   fill: 'black'
 })
-.attr('width', addPx(player.width))
-.attr('height', addPx(player.height))
-.attr('x', player.x)
-.attr('y', player.y);
+.attr('width', addPx(playerSettings.width))
+.attr('height', addPx(playerSettings.height))
+.attr('x', playerSettings.x)
+.attr('y', playerSettings.y);
+
+// handle keyboard events for the player
+d3.select('body').on('keydown', function(d) {
+    d3.event.stopPropagation();
+    var key = d3.event.keyCode;
+    if (key === 39) {
+      // move right
+      playerSettings.x += playerSettings.moveIncrement;
+      player.attr('x', playerSettings.x);
+    } else if (key === 37) {
+        // move left
+        playerSettings.x -= playerSettings.moveIncrement;
+        player.attr('x', playerSettings.x);
+    }
+
+})
 
 // Loop enemy motion
 // Loop updating score

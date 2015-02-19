@@ -5,7 +5,7 @@ Development Critical Path
 - Setup index.html page - COMPLETE
 - Create the game screen - COMPLETE
 - Create the player - COMPLETE
-- Move and Fire based on keyboard events
+- Move and Fire based on mouse/keyboard events
 - Create enemies
 - Move the enemies towards the player
 - Allow enemies to fire at the player

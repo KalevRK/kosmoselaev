@@ -57,16 +57,19 @@ d3.select('body').on('keydown', function(d) {
     var key = d3.event.keyCode;
     if (key === 32) {
         // fire weapon
-        d3.select('#gameScreen').append('svg:rect').style({
-            fill: 'green'
-        })
-        .attr('width', addPx(playerSettings.laserWidth))
-        .attr('height', addPx(playerSettings.laserHeight))
-        .attr('x', playerSettings.x + playerSettings.width/2)
-        .attr('y', playerSettings.y - playerSettings.height/2);
+        fireWeapon();
     } 
 
 })
+
+var fireWeapon = function() {
+  d3.select('#gameScreen').append('svg:rect')
+    .style({ fill: 'green' })
+    .attr('width', addPx(playerSettings.laserWidth))
+    .attr('height', addPx(playerSettings.laserHeight))
+    .attr('x', playerSettings.x + playerSettings.width/2)
+    .attr('y', playerSettings.y - playerSettings.height/2);
+};
 
 // Loop enemy motion
 // Loop updating score

@@ -7,8 +7,8 @@ var settings = {
 
 // Player
 var playerSettings = {
-    x: settings.width/2,
-    y: settings.height-20,
+    left: settings.width/2,
+    top: settings.height-20,
     width: 20,
     height: 20,
     moveIncrement: 20,
@@ -21,33 +21,27 @@ var lasers = {
   playerLasers: []
 };
 
-// Helper function for creating screen coordinates
-var addPx = function(number) {
-  return number + 'px';
-};
-
-// Setup the game screen as a SVG element on the DOM
-d3.select('#game').style({
-    width: addPx(settings.width),
-    height: addPx(settings.height),
+$('#gameScreen').css(
+  { height: settings.height,
+    width: settings.width,
     'background-color': settings.backgroundColor
-});
-
-d3.select('#gameScreen').style({
-    width: addPx(settings.width),
-    height: addPx(settings.height)
-});
+  }
+);
 
 // initialize the player
-var player = d3.select('#gameScreen').append('svg:rect')
-.attr('width', addPx(playerSettings.width))
-.attr('height', addPx(playerSettings.height))
-.attr('x', playerSettings.x)
-.attr('y', playerSettings.y)
-.style({
-  fill: 'black'
-});
+$('#gameScreen').append('<div id="player"></div>');
+var player = $('#player');
+player.css(
+  { position: 'relative',
+    top: playerSettings.top,
+    left: playerSettings.left,
+    height: playerSettings.height,
+    width: playerSettings.width,
+    'background-color': 'black'
+  }
+);
 
+/*
 // move player relative to mouse
 d3.select('#game').on('mousemove', function() {
   var location = d3.mouse(this);
@@ -104,4 +98,4 @@ function update() {
 
 // Loop checking for game events
 d3.timer(update);
-
+*/

@@ -41,16 +41,22 @@ player.css(
   }
 );
 
-/*
-// move player relative to mouse
-d3.select('#game').on('mousemove', function() {
-  var location = d3.mouse(this);
-  playerSettings.x = Math.min(Math.max(0,location[0]),settings.width-playerSettings.width);
-  playerSettings.y = Math.min(Math.max(0,location[1]),settings.height-playerSettings.height);
-  player.attr('x', playerSettings.x)
-  .attr('y', playerSettings.y);
-})
+// hide the standard mouse cursor
+$('body').css('cursor', 'none');
 
+
+// move player relative to mouse
+$('#gameScreen').on('mousemove', function(event) {
+  playerSettings.left = Math.min(Math.max(0,event.pageX),settings.width-playerSettings.width);
+  playerSettings.top = Math.min(Math.max(0,event.pageY),settings.height-playerSettings.height);
+  $('#player').css(
+    { top: playerSettings.top,
+      left: playerSettings.left
+    }
+  );
+});
+
+/*
 // handle keyboard events for the player
 d3.select('body').on('keydown', function(d) {
     d3.event.stopPropagation();

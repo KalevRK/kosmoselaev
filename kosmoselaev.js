@@ -104,19 +104,17 @@ function update() {
   // update laser positions
   _.each(lasers.playerLasers, function(laser) {
     if (laser && laser.top < playerSettings.laserHeight) {
-      lasers.playerLasers.splice(lasers.playerLasers.indexOf(laser), 1);
+      //lasers.playerLasers.splice(lasers.playerLasers.indexOf(laser), 1);
     }
     else if (laser) {
       laser.top -= playerSettings.laserMoveIncrement;
-      console.log(laser.top);
     }
   });
 
   // render updated lasers
-  // $('.laser').each.css(
-  // {
-  //   top: 
-  // });
+  $('.laser').each(function (i) {
+    this.style.top = lasers.playerLasers[i].top + 'px';
+  })
 };
 
 // Loop checking for game events

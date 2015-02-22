@@ -13,10 +13,16 @@ var playerSettings = {
     height: 20,
     moveIncrement: 20,
     laserWidth: 5,
-    laserHeight: 10
+    laserHeight: 10,
+    laserMoveIncrement: 10
 };
 
 // Lasers
+var Laser = function(top, left) {
+  this.top = top;
+  this.left = left;
+}
+
 var lasers = {
   playerLasers: []
 };
@@ -72,17 +78,16 @@ $('body').on('keydown', function(event) {
 
 var fireWeapon = function() {
   // push new laser shot to array
-  lasers.playerLasers.push(1);
+  lasers.playerLasers.push(new Laser(playerSettings.top - playerSettings.laserHeight, playerSettings.left + Math.floor(playerSettings.width/2) - Math.floor(playerSettings.laserWidth/2)));
 
   // bind laser shot array data to .laser class elements
-  // animate across screen
   $('#gameScreen').append('<div class="laser"></div>');
   var laser = $(".laser:last");
   laser.css(
     {
       position: 'absolute',
-      top: playerSettings.top - playerSettings.laserHeight,
-      left: playerSettings.left + Math.floor(playerSettings.width/2) - Math.floor(playerSettings.laserWidth/2),
+      top: lasers.playerLasers[lasers.playerLasers.length-1].top,
+      left: lasers.playerLasers[lasers.playerLasers.length-1].left,
       height: playerSettings.laserHeight,
       width: playerSettings.laserWidth,
       'background-color': 'green'
@@ -92,20 +97,31 @@ var fireWeapon = function() {
 // Loop enemy motion
 // Loop updating score
 
-/*
+
 // update game based on events
 function update() {
 
-  // check laser positions and clean up lasers that reach end of screen
-  d3.selectAll('.laser').each( function() {
-    var laser = d3.select(this);
-    if (laser.attr('y') < 1) {
-      lasers.playerLasers.shift();
-      d3.selectAll('.laser').data(lasers.playerLasers).exit().remove();
+  // update laser positions
+  _.each(lasers.playerLasers, function(laser) {
+    if (laser && laser.top < playerSettings.laserHeight) {
+      lasers.playerLasers.splice(lasers.playerLasers.indexOf(laser), 1);
+    }
+    else if (laser) {
+      laser.top -= playerSettings.laserMoveIncrement;
+      console.log(laser.top);
     }
   });
+
+  // render updated lasers
+  // $('.laser').each.css(
+  // {
+  //   top: 
+  // });
 };
 
 // Loop checking for game events
-d3.timer(update);
-*/
+setTimeout(function () {
+  update();
+  setTimeout(arguments.callee, 100);
+}, 100);
+

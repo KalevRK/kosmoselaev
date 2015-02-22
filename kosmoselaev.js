@@ -22,8 +22,10 @@ var lasers = {
 };
 
 $('#gameScreen').css(
-  { height: settings.height,
-    width: settings.width,
+  { position: 'absolute',
+    display: 'block',
+    'min-height': settings.height,
+    'min-width': settings.width,
     'background-color': settings.backgroundColor
   }
 );
@@ -56,17 +58,17 @@ $('#gameScreen').on('mousemove', function(event) {
   );
 });
 
-/*
+
 // handle keyboard events for the player
-d3.select('body').on('keydown', function(d) {
-    d3.event.stopPropagation();
-    var key = d3.event.keyCode;
+$('body').on('keydown', function(event) {
+    event.stopPropagation();
+    var key = event.which;
     if (key === 32) {
         // fire weapon
         fireWeapon();
     } 
 
-})
+});
 
 var fireWeapon = function() {
   // push new laser shot to array
@@ -74,21 +76,23 @@ var fireWeapon = function() {
 
   // bind laser shot array data to .laser class elements
   // animate across screen
-  d3.select('#gameScreen').selectAll('.laser')
-    .data(lasers.playerLasers).enter().append('svg:rect')
-    .classed('laser', true)
-    .style({ fill: 'green' })
-    .attr('width', addPx(playerSettings.laserWidth))
-    .attr('height', addPx(playerSettings.laserHeight))
-    .attr('x', playerSettings.x + playerSettings.width/2)
-    .attr('y', playerSettings.y - playerSettings.height/2)
-    .transition().ease('linear').duration(1000)
-    .attr('y', 0);
+  $('#gameScreen').append('<div class="laser"></div>');
+  var laser = $(".laser:last");
+  laser.css(
+    {
+      position: 'absolute',
+      top: playerSettings.top - playerSettings.laserHeight,
+      left: playerSettings.left + Math.floor(playerSettings.width/2) - Math.floor(playerSettings.laserWidth/2),
+      height: playerSettings.laserHeight,
+      width: playerSettings.laserWidth,
+      'background-color': 'green'
+    });
 };
 
 // Loop enemy motion
 // Loop updating score
 
+/*
 // update game based on events
 function update() {
 

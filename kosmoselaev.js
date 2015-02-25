@@ -42,6 +42,13 @@ var getLaserIndex = function(laser) {
 };
 
 // Enemies
+var enemySettings = {
+  top: 20,
+  width: 20,
+  height: 20,
+  moveIncrement: 20
+};
+
 var Enemy = function(top, left) {
   this._id = ++enemies.enemyID;
   this.top = top;
@@ -165,6 +172,21 @@ function update() {
   // add new enemy to game if counter === 80
   if (enemies.enemyCounter === 80) {
     // add new enemy at top of screen at random left value
+    // bind laser shot array data to .laser class elements
+    var enemyLeft = Math.random() * (settings.width - enemySettings.width);
+    enemies.activeEnemies.push(new Enemy(enemySettings.top, enemyLeft));
+
+    $('#gameScreen').append('<div id="'+enemies.activeEnemies[enemies.activeEnemies.length-1]._id+'"" class="enemy"></div>');
+    var enemy = $(".enemy:last");
+    enemy.css(
+      {
+        position: 'absolute',
+        top: enemies.activeEnemies[enemies.activeEnemies.length-1].top,
+        left: enemies.activeEnemies[enemies.activeEnemies.length-1].left,
+        height: enemySettings.height,
+        width: enemySettings.width,
+        'background-color': 'brown'
+      });
     
     // reset enemy counter
     enemies.enemyCounter = 0;

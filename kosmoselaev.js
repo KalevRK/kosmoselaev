@@ -41,6 +41,33 @@ var getLaserIndex = function(laser) {
   return -1;
 };
 
+// Enemies
+var Enemy = function(top, left) {
+  this._id = ++enemies.enemyID;
+  this.top = top;
+  this.left = left;
+};
+
+var enemies = {
+  enemyID: 0,
+  enemyCounter: 0,
+  activeEnemies: []
+};
+
+// utility function to check if enemy exists in enemies
+var getEnemyIndex = function(enemy) {
+  for (var i = 0; i < enemies.activeEnemies.length; i++) {
+    if (enemies.activeEnemies[i]._id === enemy._id) {
+      return i;
+    }
+  }
+
+  return -1;
+};
+
+// 
+
+
 $('#gameScreen').css(
   { position: 'absolute',
     display: 'block',
@@ -108,12 +135,15 @@ var fireWeapon = function() {
     });
 };
 
-// Loop enemy motion
+
 // Loop updating score
 
 
 // update game based on events
 function update() {
+
+  // check for player and enemy collisions
+  // check for player laser and enemy collisions
 
   // update laser positions and render
   _.each(lasers.playerLasers, function(laser) {
@@ -129,6 +159,20 @@ function update() {
         }, settings.speed);
     }
   });
+
+  // update enemy positions and render
+
+  // add new enemy to game if counter === 80
+  if (enemies.enemyCounter === 80) {
+    // add new enemy at top of screen at random left value
+    
+    // reset enemy counter
+    enemies.enemyCounter = 0;
+  } else {
+    enemies.enemyCounter++;
+  }
+
+
 
 };
 

@@ -6,8 +6,8 @@ Development Critical Path
 - Create the game screen - COMPLETE
 - Create the player - COMPLETE
 - Move and Fire based on mouse/keyboard events - COMPLETE
-- Create enemies
-- Move the enemies towards the player
+- Create enemies - COMPLETE
+- Move the enemies towards the player - COMPLETE
 - Allow enemies to fire at the player
 - Setup collision detection
 - Setup health for the player and enemies

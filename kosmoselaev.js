@@ -46,7 +46,7 @@ var enemySettings = {
   top: 20,
   width: 20,
   height: 20,
-  moveIncrement: 20
+  moveIncrement: 10
 };
 
 var Enemy = function(top, left) {
@@ -143,16 +143,8 @@ var fireWeapon = function() {
 };
 
 
-// Loop updating score
-
-
-// update game based on events
-function update() {
-
-  // check for player and enemy collisions
-  // check for player laser and enemy collisions
-
-  // update laser positions and render
+// update laser positions and render
+var updateLasers = function() {
   _.each(lasers.playerLasers, function(laser) {
     if (laser && laser.top < playerSettings.laserMoveIncrement) {
       lasers.playerLasers.splice(getLaserIndex(laser), 1);
@@ -166,35 +158,83 @@ function update() {
         }, settings.speed);
     }
   });
+};
+
+// add new enemy to game
+var addNewEnemy = function() {
+  var enemyLeft = Math.random() * (settings.width - enemySettings.width);
+  enemies.activeEnemies.push(new Enemy(enemySettings.top, enemyLeft));
+
+  $('#gameScreen').append('<div id="'+enemies.activeEnemies[enemies.activeEnemies.length-1]._id+'"" class="enemy"></div>');
+  var enemy = $(".enemy:last");
+  enemy.css(
+    {
+      position: 'absolute',
+      top: enemies.activeEnemies[enemies.activeEnemies.length-1].top,
+      left: enemies.activeEnemies[enemies.activeEnemies.length-1].left,
+      height: enemySettings.height,
+      width: enemySettings.width,
+      'background-color': 'brown'
+    }
+  );
+};
+
+// update enemy positions and render
+var updateEnemies = function() {
+  // check whether an enemy has reached the bottom of the game screen
+  // if so then remove from the array of active enemies
+  _.each(enemies.activeEnemies, function(enemy) {
+    if (enemy && enemy.top > (settings.height - enemySettings.height)) {
+      enemies.activeEnemies.splice(getEnemyIndex(enemy), 1);
+      $('.enemy#'+enemy._id).remove();
+    } else if (enemy) {
+      // if enemy has not reached the bottom of the screen then
+      // update their position and re-render them
+      
+      // move the enemy down the game screen
+      enemy.top += enemySettings.moveIncrement;
+      
+      // compare the enemy's left position to the player's left position
+      // and move the enemy closer to the player
+      if ((enemy.left+'px') > $('#player').css("left")) {
+        enemy.left -= enemySettings.moveIncrement;
+      } else {
+        enemy.left += enemySettings.moveIncrement;
+      }
+
+      $('.enemy#'+enemy._id).animate({
+        top: enemy.top,
+        left: enemy.left
+      }, settings.speed);
+    }
+  });
+};
+
+// Loop updating score
+
+
+// update game based on events
+function update() {
+
+  // check for player and enemy collisions
+  // check for player laser and enemy collisions
+
+  // update laser positions and render
+  updateLasers();
 
   // update enemy positions and render
+  updateEnemies();
 
-  // add new enemy to game if counter === 80
-  if (enemies.enemyCounter === 80) {
+  // add new enemy to game if counter === 40
+  if (enemies.enemyCounter === 40) {
     // add new enemy at top of screen at random left value
-    // bind laser shot array data to .laser class elements
-    var enemyLeft = Math.random() * (settings.width - enemySettings.width);
-    enemies.activeEnemies.push(new Enemy(enemySettings.top, enemyLeft));
+    addNewEnemy();
 
-    $('#gameScreen').append('<div id="'+enemies.activeEnemies[enemies.activeEnemies.length-1]._id+'"" class="enemy"></div>');
-    var enemy = $(".enemy:last");
-    enemy.css(
-      {
-        position: 'absolute',
-        top: enemies.activeEnemies[enemies.activeEnemies.length-1].top,
-        left: enemies.activeEnemies[enemies.activeEnemies.length-1].left,
-        height: enemySettings.height,
-        width: enemySettings.width,
-        'background-color': 'brown'
-      });
-    
     // reset enemy counter
     enemies.enemyCounter = 0;
   } else {
     enemies.enemyCounter++;
   }
-
-
 
 };
 

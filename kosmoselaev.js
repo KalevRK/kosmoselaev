@@ -19,12 +19,25 @@ var playerSettings = {
 
 // Lasers
 var Laser = function(top, left) {
+  this._id = ++lasers.playerLaserID;
   this.top = top;
   this.left = left;
 }
 
 var lasers = {
+  playerLaserID: 0,
   playerLasers: []
+};
+
+// utility function to check if laser exists in lasers.playerLasers
+var getLaserIndex = function(laser) {
+  for (var i = 0; i < lasers.playerLasers.length; i++) {
+    if (lasers.playerLasers[i]._id === laser._id) {
+      return i;
+    }
+  }
+
+  return -1;
 };
 
 $('#gameScreen').css(
@@ -79,9 +92,10 @@ $('body').on('keydown', function(event) {
 var fireWeapon = function() {
   // push new laser shot to array
   lasers.playerLasers.push(new Laser(playerSettings.top - playerSettings.laserHeight, playerSettings.left + Math.floor(playerSettings.width/2) - Math.floor(playerSettings.laserWidth/2)));
+  console.log("Laser ID: " + lasers.playerLasers[lasers.playerLasers.length-1]._id);
 
   // bind laser shot array data to .laser class elements
-  $('#gameScreen').append('<div class="laser"></div>');
+  $('#gameScreen').append('<div id="'+lasers.playerLasers[lasers.playerLasers.length-1]._id+'"" class="laser"></div>');
   var laser = $(".laser:last");
   laser.css(
     {
@@ -104,7 +118,9 @@ function update() {
   // update laser positions
   _.each(lasers.playerLasers, function(laser) {
     if (laser && laser.top < playerSettings.laserHeight) {
-      //lasers.playerLasers.splice(lasers.playerLasers.indexOf(laser), 1);
+      lasers.playerLasers.splice(getLaserIndex(laser), 1);
+      $('.laser#'+laser._id).remove();
+      
     }
     else if (laser) {
       laser.top -= playerSettings.laserMoveIncrement;
@@ -115,6 +131,7 @@ function update() {
   $('.laser').each(function (i) {
     this.style.top = lasers.playerLasers[i].top + 'px';
   })
+
 };
 
 // Loop checking for game events

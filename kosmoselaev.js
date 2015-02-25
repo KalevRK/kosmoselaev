@@ -195,30 +195,23 @@ var updateLasers = function() {
   // update player lasers
   _.each(lasers.playerLasers, function(laser) {
     if (laser && laser.top < playerSettings.laserMoveIncrement) {
-      lasers.playerLasers.splice(getLaserIndex(laser, 'player'), 1);
       $('.laser#'+laser._id).remove();
-      
+      lasers.playerLasers.splice(getLaserIndex(laser, 'player'), 1);
     }
     else if (laser) {
       laser.top -= playerSettings.laserMoveIncrement;
-      $('.laser#'+laser._id).animate({
-        top: laser.top
-        }, settings.speed);
     }
   });
 
   // update enemy lasers
   _.each(lasers.enemyLasers, function(laser) {
     if (laser && laser.top > (settings.height - playerSettings.laserMoveIncrement)) {
-      lasers.enemyLasers.splice(getLaserIndex(laser, 'enemy'), 1);
       $('.enemyLaser#'+laser._id).remove();
+      lasers.enemyLasers.splice(getLaserIndex(laser, 'enemy'), 1);
       
     }
     else if (laser) {
       laser.top += playerSettings.laserMoveIncrement;
-      $('.enemyLaser#'+laser._id).animate({
-        top: laser.top
-        }, settings.speed);
     }
   });
 };
@@ -252,9 +245,6 @@ var updateEnemies = function() {
       $('.enemy#'+enemy._id).remove();
     } else if (enemy) {
 
-      // if enemy has not reached the bottom of the screen then
-      // update their position and re-render them
-      
       // move the enemy down the game screen
       enemy.top += enemySettings.moveIncrement;
       
@@ -266,11 +256,6 @@ var updateEnemies = function() {
         enemy.left += (enemySettings.moveIncrement/2);
       }
 
-      $('.enemy#'+enemy._id).animate({
-        top: enemy.top,
-        left: enemy.left
-      }, settings.speed);
-
       // fire weapon
       enemyFireWeapon(enemy);
     }
@@ -280,16 +265,42 @@ var updateEnemies = function() {
 // Loop updating score
 
 
+// render the new state of the game
+function render() {
+  // render lasers
+  // player lasers
+  _.each(lasers.playerLasers, function(laser) {
+    $('.laser#'+laser._id).animate({
+        top: laser.top
+        }, settings.speed);
+  });
+
+  // enemy lasers
+  _.each(lasers.enemyLasers, function(laser) {
+    $('.enemyLaser#'+laser._id).animate({
+        top: laser.top
+        }, settings.speed);
+  });
+
+  // render enemies
+  _.each(enemies.activeEnemies, function(enemy) {
+    $('.enemy#'+enemy._id).animate({
+        top: enemy.top,
+        left: enemy.left
+      }, settings.speed);
+  });
+};
+
 // update game based on events
 function update() {
 
   // check for player and enemy collisions
   // check for player laser and enemy collisions
 
-  // update laser positions and render
+  // update laser positions
   updateLasers();
 
-  // update enemy positions and render
+  // update enemy positions
   updateEnemies();
 
   // add new enemy to game if counter === 40
@@ -302,6 +313,9 @@ function update() {
   } else {
     enemies.enemyCounter++;
   }
+
+  // render the new state of the game
+  render();
 
 };
 

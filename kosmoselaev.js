@@ -19,22 +19,36 @@ var playerSettings = {
 };
 
 // Lasers
-var Laser = function(top, left) {
-  this._id = ++lasers.playerLaserID;
+var Laser = function(top, left, type) {
+  if (type === 'player') {
+    this._id = ++lasers.playerLaserID;
+  } else {
+    this._id = ++lasers.enemyLaserID;
+  }
   this.top = top;
   this.left = left;
 }
 
 var lasers = {
   playerLaserID: 0,
-  playerLasers: []
+  playerLasers: [],
+  enemyLaserID: 0,
+  enemyLasers: []
 };
 
 // utility function to check if laser exists in lasers.playerLasers
-var getLaserIndex = function(laser) {
-  for (var i = 0; i < lasers.playerLasers.length; i++) {
-    if (lasers.playerLasers[i]._id === laser._id) {
-      return i;
+var getLaserIndex = function(laser, type) {
+  if (type === 'player') {
+    for (var i = 0; i < lasers.playerLasers.length; i++) {
+      if (lasers.playerLasers[i]._id === laser._id) {
+        return i;
+      }
+    }
+  } else if (type === 'enemy') {
+    for (var i = 0; i < lasers.enemyLasers.length; i++) {
+      if (lasers.enemyLasers[i]._id === laser._id) {
+        return i;
+      }
     }
   }
 
@@ -53,6 +67,7 @@ var Enemy = function(top, left) {
   this._id = ++enemies.enemyID;
   this.top = top;
   this.left = left;
+  this.fireCount = 0;
 };
 
 var enemies = {
@@ -124,12 +139,13 @@ $('body').on('keydown', function(event) {
 
 });
 
+// player fires weapon
 var fireWeapon = function() {
   // push new laser shot to array
-  lasers.playerLasers.push(new Laser(playerSettings.top - playerSettings.laserHeight, playerSettings.left + Math.floor(playerSettings.width/2) - Math.floor(playerSettings.laserWidth/2)));
+  lasers.playerLasers.push(new Laser(playerSettings.top - playerSettings.laserHeight, playerSettings.left + Math.floor(playerSettings.width/2) - Math.floor(playerSettings.laserWidth/2), 'player'));
 
   // bind laser shot array data to .laser class elements
-  $('#gameScreen').append('<div id="'+lasers.playerLasers[lasers.playerLasers.length-1]._id+'"" class="laser"></div>');
+  $('#gameScreen').append('<div id="'+lasers.playerLasers[lasers.playerLasers.length-1]._id+'" class="laser"></div>');
   var laser = $(".laser:last");
   laser.css(
     {
@@ -142,18 +158,65 @@ var fireWeapon = function() {
     });
 };
 
+// enemy fires weapon
+var enemyFireWeapon = function(enemy) {
+  // check whether enemy's fireCount is at point where the enemy should fire
+  if (enemy.fireCount === 10) {
+
+    // push new laser shot to array
+    lasers.enemyLasers.push(new Laser(enemy.top + enemySettings.height, enemy.left + Math.floor(enemySettings.width/2) - Math.floor(playerSettings.laserWidth/2) ,'enemy'));
+
+    // bind laser shot array data to .laser class elements
+    $('#gameScreen').append('<div id="'+lasers.enemyLasers[lasers.enemyLasers.length-1]._id+'" class="enemyLaser"></div>');
+    var laser = $(".enemyLaser:last");
+    laser.css(
+      {
+        position: 'absolute',
+        top: lasers.enemyLasers[lasers.enemyLasers.length-1].top,
+        left: lasers.enemyLasers[lasers.enemyLasers.length-1].left,
+        height: playerSettings.laserHeight,
+        width: playerSettings.laserWidth,
+        'background-color': 'red'
+      }
+    );
+
+    // reset enemy's fireCount
+    enemy.fireCount = 0;
+  } else {
+    // increment enemy's fireCount
+    enemy.fireCount++;
+  }
+};
+
 
 // update laser positions and render
 var updateLasers = function() {
+
+  // update player lasers
   _.each(lasers.playerLasers, function(laser) {
     if (laser && laser.top < playerSettings.laserMoveIncrement) {
-      lasers.playerLasers.splice(getLaserIndex(laser), 1);
+      lasers.playerLasers.splice(getLaserIndex(laser, 'player'), 1);
       $('.laser#'+laser._id).remove();
       
     }
     else if (laser) {
       laser.top -= playerSettings.laserMoveIncrement;
       $('.laser#'+laser._id).animate({
+        top: laser.top
+        }, settings.speed);
+    }
+  });
+
+  // update enemy lasers
+  _.each(lasers.enemyLasers, function(laser) {
+    if (laser && laser.top > (settings.height - playerSettings.laserMoveIncrement)) {
+      lasers.enemyLasers.splice(getLaserIndex(laser, 'enemy'), 1);
+      $('.enemyLaser#'+laser._id).remove();
+      
+    }
+    else if (laser) {
+      laser.top += playerSettings.laserMoveIncrement;
+      $('.enemyLaser#'+laser._id).animate({
         top: laser.top
         }, settings.speed);
     }
@@ -179,7 +242,7 @@ var addNewEnemy = function() {
   );
 };
 
-// update enemy positions and render
+// update enemies and render
 var updateEnemies = function() {
   // check whether an enemy has reached the bottom of the game screen
   // if so then remove from the array of active enemies
@@ -188,6 +251,7 @@ var updateEnemies = function() {
       enemies.activeEnemies.splice(getEnemyIndex(enemy), 1);
       $('.enemy#'+enemy._id).remove();
     } else if (enemy) {
+
       // if enemy has not reached the bottom of the screen then
       // update their position and re-render them
       
@@ -197,15 +261,18 @@ var updateEnemies = function() {
       // compare the enemy's left position to the player's left position
       // and move the enemy closer to the player
       if ((enemy.left+'px') > $('#player').css("left")) {
-        enemy.left -= enemySettings.moveIncrement;
+        enemy.left -= (enemySettings.moveIncrement/2);
       } else {
-        enemy.left += enemySettings.moveIncrement;
+        enemy.left += (enemySettings.moveIncrement/2);
       }
 
       $('.enemy#'+enemy._id).animate({
         top: enemy.top,
         left: enemy.left
       }, settings.speed);
+
+      // fire weapon
+      enemyFireWeapon(enemy);
     }
   });
 };
